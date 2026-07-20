@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<title>Gency Store — Friperie femme, l'élégance au féminin</title>
+<meta name="description" content="Gency Store, friperie en ligne pour femme en Côte d'Ivoire. Robes, ensembles et pépites triées sur le volet, arrivage après arrivage.">
+</head>
+<body>
+
+<input type="checkbox" id="nav-toggle" class="nav-toggle">
+
+<header class="topbar">
+  <a href="index.html" class="topbar__brand">
+    <img src="assets/logo.png" alt="Gency Store" class="topbar__logo">
+    <span>Gency Store</span>
+  </a>
+  <label for="nav-toggle" class="topbar__burger" aria-label="Ouvrir le menu">
+    <span></span><span></span><span></span>
+  </label>
+</header>
+
+<aside class="sidebar">
+  <div class="sidebar__top">
+    <a href="index.html" class="sidebar__brand">
+      <img src="assets/logo.png" alt="Gency Store" class="sidebar__logo">
+      <span class="sidebar__wordmark">Gency<br>Store</span>
+    </a>
+    <p class="sidebar__tagline">L'élégance<br>au féminin</p>
+  </div>
+
+  <nav class="sidebar__nav">
+    <a href="index.html" class="is-active"><span>Accueil</span></a>
+    <a href="arrivages.html"><span>Arrivages</span></a>
+    <a href="categories.html"><span>Catégories</span></a>
+    <a href="commander.html"><span>Commander</span></a>
+    <a href="contact.html"><span>Contact</span></a>
+  </nav>
+
+  <div class="sidebar__bottom">
+    <a href="https://wa.me/2250101580310" class="sidebar__cta" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+    <div class="sidebar__social">
+      <a href="https://instagram.com/gencystore" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://tiktok.com/@gencystore" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="eyebrow">Friperie femme · Côte d'Ivoire</p>
+    <h1 class="hero__title">L'élégance au féminin,<br><em>à petit prix.</em></h1>
+    <p class="hero__lede">Des pièces triées à la main, essayées et validées avant chaque mise en ligne. Chaque arrivage est une nouvelle chasse aux pépites.</p>
+    <div class="hero__actions">
+      <a href="https://wa.me/2250101580310" class="btn btn--primary" target="_blank" rel="noopener">Commander sur WhatsApp</a>
+      <a href="categories.html" class="btn btn--ghost">Voir les catégories</a>
+    </div>
+    <p class="hero__price"><em>1 000 — 3 500 FCFA</em> · prix par pièce, toute la collection</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- DERNIER ARRIVAGE (aperçu) -->
+  <section class="section" id="arrivages">
+    <p class="eyebrow">Le journal des arrivages</p>
+    <h2 class="section__title">Fraîchement déballé</h2>
+    <p class="section__lede">Les photos et vidéos d'essayage arrivent après chaque arrivage. En attendant, réservez votre place — les modèles partent vite.</p>
+
+    <ol class="ledger" id="ledger-list"></ol>
+    <div class="arrivage-grid" id="arrivage-grid"></div>
+
+    <p style="margin-top:32px;"><a href="arrivages.html" class="btn btn--ghost">Voir tout le journal des arrivages</a></p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- CATEGORIES (aperçu) -->
+  <section class="section" id="categories">
+    <p class="eyebrow">La collection</p>
+    <h2 class="section__title">Une catégorie pour chaque envie</h2>
+
+    <div class="cat-list" id="cat-grid"></div>
+  </section>
+
+  <footer class="footer">
+    <p class="footer__tagline">Beauté · Confiance · Élégance</p>
+    <p class="footer__copy">© <span id="year"></span> Gency Store — Fait avec soin à Abidjan.</p>
+  </footer>
+
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script>
+getArrivages().then((data) => renderLedger(document.getElementById("ledger-list"), data));
+getPieces(4).then((data) => renderPieceGrid(document.getElementById("arrivage-grid"), data));
+getCategories().then((data) => renderCategoryList(document.getElementById("cat-grid"), data));
+</script>
+</body>
+</html>
