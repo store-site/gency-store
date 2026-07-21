@@ -5,19 +5,22 @@
 
   Collection "categories" → champs : nom (texte), desc (texte)
 
+  Collection "arrivages" → champs :
+    num (texte — identifiant, ex "01"), nom (texte), date (texte),
+    video (texte — URL directe de LA vidéo de cet arrivage, ou vide)
+
   Collection "pieces" → champs :
     nom (texte), prix (nombre, FCFA), description (texte),
     categorie (texte — doit correspondre exactement au "nom" d'une catégorie),
+    arrivage (texte — doit correspondre exactement au "num" d'un arrivage),
     tailles (tableau de textes, ex: ["S","M","L"]),
     couleurs (tableau de textes, ex: ["Rose","Noir"]),
     stock (nombre — quantité disponible),
-    photos (tableau d'URLs d'images),
-    video (texte — URL directe, ou vide)
-
-  Collection "arrivages" → champs : num (texte), nom (texte), date (texte)
+    photos (tableau d'URLs d'images)
 
   Chaque fonction retourne les documents avec leur "id" Firestore inclus,
-  pour pouvoir lier vers la fiche article (piece.html?id=...).
+  pour pouvoir lier vers la fiche article (piece.html?id=...) ou éditer
+  un arrivage depuis l'admin.
 */
 
 function getArrivages() {
@@ -25,7 +28,7 @@ function getArrivages() {
     .collection("arrivages")
     .orderBy("num")
     .get()
-    .then((snap) => snap.docs.map((d) => d.data()));
+    .then((snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() })));
 }
 
 function getPieces(limit) {
