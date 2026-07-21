@@ -68,6 +68,7 @@ function initAdmin() {
   if (adminInitialized) return;
   adminInitialized = true;
   loadCategoriesIntoSelect();
+  loadArrivagesIntoSelect();
   refreshPiecesList();
   refreshCategoriesList();
   refreshArrivagesList();
@@ -82,6 +83,17 @@ function loadCategoriesIntoSelect() {
   const select = document.getElementById("piece-categorie");
   getCategories().then((cats) => {
     select.innerHTML = cats.map((c) => `<option value="${c.nom}">${c.nom}</option>`).join("");
+  });
+}
+
+// ---------- ARRIVAGES : select du formulaire pièce ----------
+
+function loadArrivagesIntoSelect() {
+  const select = document.getElementById("piece-arrivage");
+  getArrivages().then((arrivages) => {
+    select.innerHTML =
+      `<option value="">— aucun —</option>` +
+      arrivages.map((a) => `<option value="${a.num}">${a.num} — ${a.nom}</option>`).join("");
   });
 }
 
@@ -133,7 +145,35 @@ function refreshArrivagesList() {
   });
 }
 
+let pendingArrivageVideo = null;
+
+function renderArrivageVideoPreview() {
+  const el = document.getElementById("arrivage-video-preview");
+  el.innerHTML = pendingArrivageVideo
+    ? `<div class="media-thumb media-thumb--video"><video src="${pendingArrivageVideo}" muted></video><button type="button" id="remove-arrivage-video" class="media-thumb__remove">×</button></div>`
+    : "";
+  const removeBtn = document.getElementById("remove-arrivage-video");
+  if (removeBtn) removeBtn.addEventListener("click", () => { pendingArrivageVideo = null; renderArrivageVideoPreview(); });
+}
+
 function wireArrivageForm() {
+  const videoInput = document.getElementById("arr-video-input");
+  const status = document.getElementById("arr-upload-status");
+
+  videoInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    status.textContent = "Envoi de la vidéo en cours… (peut prendre un moment)";
+    try {
+      pendingArrivageVideo = await uploadToCloudinary(file, "video");
+      renderArrivageVideoPreview();
+      status.textContent = "";
+    } catch (err) {
+      status.textContent = "Erreur d'envoi vidéo : " + err.message;
+    }
+    videoInput.value = "";
+  });
+
   document.getElementById("arrivage-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const num = document.getElementById("arr-num").value.trim();
@@ -141,10 +181,13 @@ function wireArrivageForm() {
     const date = document.getElementById("arr-date").value.trim() || "à venir";
     if (!num || !nom) return;
     db.collection("arrivages")
-      .add({ num, nom, date })
+      .add({ num, nom, date, video: pendingArrivageVideo })
       .then(() => {
         document.getElementById("arrivage-form").reset();
+        pendingArrivageVideo = null;
+        renderArrivageVideoPreview();
         refreshArrivagesList();
+        loadArrivagesIntoSelect();
       });
   });
 }
@@ -185,6 +228,7 @@ function loadPieceIntoForm(id) {
     document.getElementById("piece-prix").value = p.prix || "";
     document.getElementById("piece-description").value = p.description || "";
     document.getElementById("piece-categorie").value = p.categorie || "";
+    document.getElementById("piece-arrivage").value = p.arrivage || "";
     document.getElementById("piece-tailles").value = (p.tailles || []).join(", ");
     document.getElementById("piece-couleurs").value = (p.couleurs || []).join(", ");
     document.getElementById("piece-stock").value = p.stock ?? 0;
@@ -265,6 +309,7 @@ function wirePieceForm() {
       prix: Number(document.getElementById("piece-prix").value) || 0,
       description: document.getElementById("piece-description").value.trim(),
       categorie: document.getElementById("piece-categorie").value,
+      arrivage: document.getElementById("piece-arrivage").value || null,
       tailles: document.getElementById("piece-tailles").value.split(",").map((s) => s.trim()).filter(Boolean),
       couleurs: document.getElementById("piece-couleurs").value.split(",").map((s) => s.trim()).filter(Boolean),
       stock: Number(document.getElementById("piece-stock").value) || 0,
@@ -298,7 +343,7 @@ function wireDeleteButtons() {
         .then(() => {
           if (btn.dataset.type === "pieces") refreshPiecesList();
           if (btn.dataset.type === "categories") { refreshCategoriesList(); loadCategoriesIntoSelect(); }
-          if (btn.dataset.type === "arrivages") refreshArrivagesList();
+          if (btn.dataset.type === "arrivages") { refreshArrivagesList(); loadArrivagesIntoSelect(); }
         });
     };
   });
