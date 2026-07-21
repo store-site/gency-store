@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<title>Panier — Gency Store</title>
+<meta name="description" content="Votre panier Gency Store — validez directement sur WhatsApp.">
+</head>
+<body>
+
+<input type="checkbox" id="nav-toggle" class="nav-toggle">
+
+<header class="topbar">
+  <a href="index.html" class="topbar__brand">
+    <img src="assets/logo.png" alt="Gency Store" class="topbar__logo">
+    <span>Gency Store</span>
+  </a>
+  <label for="nav-toggle" class="topbar__burger" aria-label="Ouvrir le menu">
+    <span></span><span></span><span></span>
+  </label>
+</header>
+
+<aside class="sidebar">
+  <div class="sidebar__top">
+    <a href="index.html" class="sidebar__brand">
+      <img src="assets/logo.png" alt="Gency Store" class="sidebar__logo">
+      <span class="sidebar__wordmark">Gency<br>Store</span>
+    </a>
+    <p class="sidebar__tagline">L'élégance<br>au féminin</p>
+  </div>
+
+  <nav class="sidebar__nav">
+    <a href="index.html"><span>Accueil</span></a>
+    <a href="arrivages.html"><span>Arrivages</span></a>
+    <a href="categories.html"><span>Catégories</span></a>
+    <a href="panier.html" class="is-active"><span>Panier <span id="cart-count" class="cart-badge"></span></span></a>
+    <a href="commander.html"><span>Commander</span></a>
+    <a href="contact.html"><span>Contact</span></a>
+  </nav>
+
+  <div class="sidebar__bottom">
+    <a href="https://wa.me/2250101580310" class="sidebar__cta" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+    <div class="sidebar__social">
+      <a href="https://instagram.com/gencystore" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://tiktok.com/@gencystore" target="_blank" rel="noopener">TikTok</a>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <section class="page-header">
+    <p class="eyebrow">Votre sélection</p>
+    <h1 class="page-header__title">Panier</h1>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section" style="max-width:720px;">
+    <p id="cart-empty" style="display:none; color:var(--espresso-soft);">Votre panier est vide pour l'instant. <a href="categories.html" style="color:var(--rose-deep);">Voir les catégories</a>.</p>
+    <div id="cart-list"></div>
+    <div class="cart-total" id="cart-total-row" style="display:none;">
+      <span>Total</span>
+      <span id="cart-total">0 FCFA</span>
+    </div>
+    <button id="checkout-btn" class="btn btn--primary" style="margin-top:28px; width:100%;">Valider sur WhatsApp</button>
+  </section>
+
+  <footer class="footer">
+    <p class="footer__tagline">Beauté · Confiance · Élégance</p>
+    <p class="footer__copy">© <span id="year"></span> Gency Store — Fait avec soin à Abidjan.</p>
+  </footer>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/data.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/render.js"></script>
+<script>
+const cartListEl = document.getElementById("cart-list");
+const cartEmptyEl = document.getElementById("cart-empty");
+const cartTotalRow = document.getElementById("cart-total-row");
+
+function refreshCartPage() {
+  renderCartPage(cartListEl, cartEmptyEl);
+  renderCartTotal();
+  cartTotalRow.style.display = readCart().length ? "flex" : "none";
+}
+refreshCartPage();
+
+document.getElementById("checkout-btn").addEventListener("click", () => {
+  if (readCart().length === 0) {
+    alert("Votre panier est vide.");
+    return;
+  }
+  checkoutOnWhatsApp();
+});
+</script>
+</body>
+</html>
