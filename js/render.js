@@ -34,16 +34,16 @@ function renderLedger(el, arrivages) {
     .join("");
 }
 
-// Aperçu (page d'accueil) — non cliquable, juste un avant-goût
+// Grille cliquable — chaque carte mène à sa fiche article (accueil, arrivages, catégorie)
 function renderPieceGrid(el, pieces) {
   el.innerHTML = pieces
     .map(
       (p) => `
-    <div class="arrivage-card">
+    <a class="arrivage-card arrivage-card--link" href="piece.html?id=${p.id}">
       ${mediaSwatch(p)}
       <p class="arrivage-card__name">${p.nom}</p>
       <p class="arrivage-card__price">${fmt(p.prix)}</p>
-    </div>`
+    </a>`
     )
     .join("");
 }
@@ -74,6 +74,31 @@ function renderCategoryList(el, categories) {
       <span class="cat-list__name">${c.nom}</span>
       <span class="cat-list__desc">${c.desc}</span>
     </a>`
+    )
+    .join("");
+}
+
+// Journal des arrivages = un répertoire vidéo, une vidéo par arrivage
+function renderArrivageCards(el, arrivages) {
+  if (arrivages.length === 0) {
+    el.innerHTML = `<p style="color:var(--espresso-soft)">Aucun arrivage pour l'instant.</p>`;
+    return;
+  }
+  el.innerHTML = arrivages
+    .map(
+      (a) => `
+    <div class="arrivage-video-card">
+      ${
+        a.video
+          ? `<video src="${a.video}" controls muted loop playsinline preload="metadata"></video>`
+          : `<div class="piece__placeholder">vidéo à venir</div>`
+      }
+      <div class="arrivage-video-card__info">
+        <span class="ledger__num">${a.num}</span>
+        <span class="arrivage-video-card__name">${a.nom}</span>
+        <span class="ledger__date">${a.date || ""}</span>
+      </div>
+    </div>`
     )
     .join("");
 }
@@ -164,7 +189,6 @@ function renderPieceDetail(el, p) {
     el.querySelectorAll(".piece__thumb").forEach((btn) => {
       btn.addEventListener("click", () => {
         const item = mediaItems[Number(btn.dataset.i)];
-        const container = document.getElementById("piece-main-media").parentElement;
         const newMedia =
           item.type === "video"
             ? `<video id="piece-main-media" src="${item.url}" controls muted loop playsinline preload="metadata"></video>`
